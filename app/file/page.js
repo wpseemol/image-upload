@@ -18,6 +18,8 @@ export default function FileUpload() {
 
         const files = event.target.files[0];
 
+        const allImageRef = ref(storage, 'images/');
+
         const imageRef = ref(storage, `images/${files.name}`);
 
         try {
@@ -35,10 +37,12 @@ export default function FileUpload() {
         }
     }
 
+    console.log('All Images:', allImage);
+
     console.log('image:', images);
 
     return (
-        <div>
+        <div className="flex flex-col items-center justify-center mt-10">
             <h4>Select Image(s)</h4>
 
             <div className="flex gap-2 items-center">
@@ -72,11 +76,15 @@ export default function FileUpload() {
                 )}
             </div>
 
+            <label htmlFor="myImage">Upload Image</label>
+
             <input
                 type="file"
                 name="myImage"
+                id="myImage"
                 onChange={handleFileUpload}
                 multiple
+                hidden
             />
         </div>
     );
