@@ -20,4 +20,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 
 const firebaseApp = getApp();
-export const storage = getStorage(firebaseApp, 'gs://my-custom-bucket');
+export const storage = getStorage(
+    firebaseApp,
+    'gs://file-upload-de4ca.appspot.com'
+);
