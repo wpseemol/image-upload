@@ -37,10 +37,6 @@ export default function FileUpload() {
         }
     }
 
-    console.log('All Images:', allImage);
-
-    console.log('image:', images);
-
     return (
         <div className="flex flex-col items-center justify-center mt-10">
             <h4>Select Image(s)</h4>
@@ -76,7 +72,9 @@ export default function FileUpload() {
                 )}
             </div>
 
-            <label htmlFor="myImage">Upload Image</label>
+            <label htmlFor="myImage" className="mt-8">
+                Upload Image
+            </label>
 
             <input
                 type="file"
@@ -84,7 +82,7 @@ export default function FileUpload() {
                 id="myImage"
                 onChange={handleFileUpload}
                 multiple
-                hidden
+                className="ml-[8rem] mt-2"
             />
         </div>
     );
