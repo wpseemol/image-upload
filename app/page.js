@@ -42,7 +42,6 @@ export default async function Home() {
                                 width={400}
                                 height={400}
                                 className="w-auto h-auto"
-                                priority={false}
                             />
                         </figure>
                     );
