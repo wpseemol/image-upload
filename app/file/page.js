@@ -2,34 +2,35 @@
 
 import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
 import Image from 'next/image';
+import Link from 'next/link';
 import { useState } from 'react';
 import { storage } from '../firebase/firebase-config';
 
 export default function FileUpload() {
-    const [images, setImage] = useState(null);
-
+    const [images, setImages] = useState([]); // Use an array to store multiple image URLs
     const [loading, setLoading] = useState(false);
 
     async function handleFileUpload(event) {
         setLoading(true);
-        if (!event.target.files || event.target.files.length === 0) {
+        const selectedFiles = event.target.files;
+
+        if (!selectedFiles || selectedFiles.length === 0) {
             return; // User canceled file selection
         }
 
-        const files = event.target.files[0];
-
-        const allImageRef = ref(storage, 'images/');
-
-        const imageRef = ref(storage, `images/${files.name}`);
-
         try {
-            const uploadImage = await uploadBytes(imageRef, files);
+            const uploadPromises = Array.from(selectedFiles).map(
+                async (file) => {
+                    const imageRef = ref(storage, `images/${file.name}`);
+                    console.log(imageRef);
+                    await uploadBytes(imageRef, file);
+                    const imgUrl = await getDownloadURL(ref(storage, imageRef));
+                    return imgUrl;
+                }
+            );
 
-            const imgUrl = await getDownloadURL(ref(storage, imageRef));
-
-            setImage(imgUrl);
-
-            console.log(imageRef);
+            const uploadedImageUrls = await Promise.all(uploadPromises);
+            setImages(uploadedImageUrls);
             setLoading(false);
         } catch (error) {
             console.error('Network error:', error);
@@ -43,37 +44,26 @@ export default function FileUpload() {
 
             <div className="flex gap-2 items-center">
                 {loading ? (
-                    <>
-                        <div className="w-[200px] h-[200px] flex items-center justify-center">
-                            <p className="">Loading</p>
-                            <span className="animate-bounce">.</span>
-                            <span className="animate-bounce">.</span>
-                            <span className="animate-bounce">.</span>
-                        </div>
-                    </>
+                    <div className="w-[200px] h-[200px] flex items-center justify-center">
+                        <p className="">Loading</p>
+                        <span className="animate-bounce text-5xl">...</span>
+                    </div>
                 ) : (
-                    images && (
+                    images.map((url, index) => (
                         <Image
-                            src={images}
-                            alt="images"
+                            key={index}
+                            src={url}
+                            alt={`image${index + 1}`}
                             width={200}
                             height={200}
+                            className="w-auto h-auto"
                         />
-                    )
-                    // images.map((img, inx) => (
-                    //     <Image
-                    //         key={inx}
-                    //         src={`${img.url}`}
-                    //         alt="images"
-                    //         width={200}
-                    //         height={150}
-                    //     />
-                    //))
+                    ))
                 )}
             </div>
 
             <label htmlFor="myImage" className="mt-8">
-                Upload Image
+                Upload Image(s)
             </label>
 
             <input
@@ -81,9 +71,19 @@ export default function FileUpload() {
                 name="myImage"
                 id="myImage"
                 onChange={handleFileUpload}
-                multiple
+                multiple // Allow multiple files
                 className="ml-[8rem] mt-2"
             />
+
+            {images.length >= 1 && (
+                <div className="mt-6">
+                    <Link
+                        className="px-5 py-3 bg-green-500 text-white rounded"
+                        href="/">
+                        Home
+                    </Link>
+                </div>
+            )}
         </div>
     );
 }

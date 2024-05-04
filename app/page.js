@@ -1,6 +1,7 @@
 import { getDownloadURL, listAll, ref } from 'firebase/storage';
 import Image from 'next/image';
 import Link from 'next/link';
+import DeletedBtn from './components/client/DeletedBtn';
 import { storage } from './firebase/firebase-config';
 
 export default async function Home() {
@@ -11,7 +12,8 @@ export default async function Home() {
 
         const urlPromises = listImage.items.map(async (itemRef) => {
             const url = await getDownloadURL(ref(storage, itemRef));
-            return url;
+
+            return { url: url, itemRef: itemRef?._location.path_ };
         });
 
         allImage = await Promise.all(urlPromises);
@@ -19,10 +21,8 @@ export default async function Home() {
         throw error;
     }
 
-    console.log(allImage);
-
     return (
-        <main className="flex min-h-screen flex-col items-center gap-6 mt-24">
+        <main className="flex min-h-screen container mx-auto flex-col items-center gap-6 mt-24">
             <div>
                 <Link
                     href={'/file'}
@@ -30,18 +30,23 @@ export default async function Home() {
                     Image Upload
                 </Link>
             </div>
-            <p>Images {allImage?.length}</p>
-            <div className="">
-                {allImage.map((url, inx) => (
-                    <figure key={inx} className="relative w-24 h-24 ">
-                        <Image
-                            src={url}
-                            alt={`image${inx + 1}`}
-                            fill
-                            className="object-cover"
-                        />
-                    </figure>
-                ))}
+            <p>Images:- {allImage?.length}</p>
+            <div className=" flex w-fit justify-center gap-4 flex-wrap">
+                {allImage.map((img, inx) => {
+                    return (
+                        <figure key={inx} className="relative">
+                            <DeletedBtn imgRef={img.itemRef} />
+                            <Image
+                                src={img.url}
+                                alt={`image${inx + 1}`}
+                                width={400}
+                                height={400}
+                                className="w-auto h-auto"
+                                priority={false}
+                            />
+                        </figure>
+                    );
+                })}
             </div>
         </main>
     );
