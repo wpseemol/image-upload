@@ -15,18 +15,22 @@ export const POST = async (req, res) => {
         }
 
         // Process each file
-
+        const baseUrl = 'http://localhost:3000'; // Replace with your actual domain
         const array = [];
 
         for (const file of files) {
             const buffer = Buffer.from(await file.arrayBuffer());
             const filename = generateRandomFilename(); // You can create a function to generate unique filenames
-            const test = await writeFile(
+            await writeFile(
                 path.join(process.cwd(), 'public/assets/', filename),
                 buffer
             );
 
-            array.push({ url: filename, test });
+            // Construct the full image URL
+            const imageUrl = `/assets/${filename}`;
+            const fullImageUrl = `${baseUrl}${imageUrl}`;
+
+            array.push({ url: fullImageUrl }); // Store the full image URL
         }
 
         return NextResponse.json({
