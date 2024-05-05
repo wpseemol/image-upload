@@ -4,6 +4,8 @@ import Link from 'next/link';
 import DeletedBtn from './components/client/DeletedBtn';
 import { storage } from './firebase/firebase-config';
 
+export const dynamic = 'force-dynamic';
+
 export default async function Home() {
     const allImageRef = ref(storage, 'images/');
     let allImage = [];
