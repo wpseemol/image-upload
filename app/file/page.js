@@ -22,7 +22,7 @@ export default function FileUpload() {
             const uploadPromises = Array.from(selectedFiles).map(
                 async (file) => {
                     const imageRef = ref(storage, `images/${file.name}`);
-                    console.log(imageRef);
+
                     await uploadBytes(imageRef, file);
                     const imgUrl = await getDownloadURL(ref(storage, imageRef));
                     return imgUrl;
