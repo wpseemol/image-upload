@@ -1,15 +1,16 @@
 'use client';
 
 import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
-import { revalidatePath } from 'next/cache';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { storage } from '../firebase/firebase-config';
 
 export default function FileUpload() {
     const [images, setImages] = useState([]); // Use an array to store multiple image URLs
     const [loading, setLoading] = useState(false);
+    const router = useRouter();
 
     async function handleFileUpload(event) {
         setLoading(true);
@@ -34,7 +35,7 @@ export default function FileUpload() {
             setImages(uploadedImageUrls);
             setLoading(false);
 
-            revalidatePath('/');
+            router.refresh();
         } catch (error) {
             console.error('Network error:', error);
             setLoading(false);
