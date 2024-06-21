@@ -1,6 +1,7 @@
 'use client';
 
 import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
+import { revalidatePath } from 'next/cache';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useState } from 'react';
@@ -32,6 +33,8 @@ export default function FileUpload() {
             const uploadedImageUrls = await Promise.all(uploadPromises);
             setImages(uploadedImageUrls);
             setLoading(false);
+
+            revalidatePath('/');
         } catch (error) {
             console.error('Network error:', error);
             setLoading(false);

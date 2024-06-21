@@ -2,6 +2,7 @@
 
 import { storage } from '@/app/firebase/firebase-config';
 import { deleteObject, ref } from 'firebase/storage';
+import { revalidatePath } from 'next/cache';
 
 export default function DeletedBtn({ imgRef }) {
     const imageRef = ref(storage, imgRef);
@@ -11,6 +12,8 @@ export default function DeletedBtn({ imgRef }) {
             const isDeleted = await deleteObject(imageRef);
             alert('image Deleted successfully');
             console.log(isDeleted);
+
+            revalidatePath('/');
         } catch (error) {
             console.log('Error deleting image:', error);
             throw error;
